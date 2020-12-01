@@ -1,0 +1,5 @@
+osm_roads_hungary.prj filter=lfs diff=lfs merge=lfs -text
+osm_roads_hungary.shp filter=lfs diff=lfs merge=lfs -text
+osm_roads_hungary.shx filter=lfs diff=lfs merge=lfs -text
+osm_roads_hungary.cpg filter=lfs diff=lfs merge=lfs -text
+osm_roads_hungary.dbf filter=lfs diff=lfs merge=lfs -text
