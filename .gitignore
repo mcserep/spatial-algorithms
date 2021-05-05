@@ -1,4 +1,4 @@
 .ipynb_checkpoints/
 virtualenv_*/
 venv_*/
-
+.idea/
