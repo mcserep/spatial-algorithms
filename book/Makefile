@@ -24,18 +24,32 @@ SRC=01_python_intro \
 	exercise_05_solutions
 
 _JUPYTER_HTML=$(patsubst %, %.html, $(SRC))
+_PDF=$(patsubst %, pdf/%.pdf, $(SRC))
 
 .PHONY: all clean
-all: $(_JUPYTER_HTML) index.html
+all: book.pdf
 
 %.html: %.ipynb
-	jupyter nbconvert --to html $<
-	sed -i 's/.ipynb"/.html"/' $@
-	sed -i 's/.ipynb#/.html#/' $@
+	jupyter nbconvert --to html --template classic $<
+	sed -i 's/\.ipynb"/.html"/' $@
+	sed -i 's/\.ipynb#/.html#/' $@
+
+pdf/%.pdf: %.html
+	mkdir -p pdf
+	wkhtmltopdf --print-media-type $< $@
 
 index.html: README.md
-	pandoc -s README.md -t html -o index.html -T "Spatial algorithms with Python"
-	sed -i 's/.ipynb/.html/' $@
+	pandoc -s $< -t html -o $@ -T "Spatial algorithms with Python"
+	sed -i 's/\.ipynb/.html/' $@
+
+cover.pdf: index.html
+	mkdir -p pdf
+	wkhtmltopdf --print-media-type $< $@
+
+book.pdf: cover.pdf $(_PDF)
+	pdfunite $^ $@
 
 clean:
 	$(RM) *.html
+	$(RM) *.pdf
+	$(RM) pdf/
