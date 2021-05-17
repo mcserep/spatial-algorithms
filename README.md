@@ -2,3 +2,9 @@
 
 # Spatial algorithms with Python
 Materials for the Spatial algorithms course in Cartography MSc.
+
+## Contents
+ - [Workbooks](workbooks/README.md)
+ - [Solution books](solutions/README.md) (for the workbooks)
+ - [Exercise books](exercises/README.md) (and their solutions)
+ - [Lecture notes](book/README.md) (executed notebooks with HTML and PDF export)
