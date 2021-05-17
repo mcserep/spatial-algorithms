@@ -23,33 +23,69 @@ SRC=01_python_intro \
 	exercise_04_solutions \
 	exercise_05_solutions
 
-_JUPYTER_HTML=$(patsubst %, %.html, $(SRC))
+_WEB_HTML=$(patsubst %, web/%.html, $(SRC))
+_PDF_HTML=$(patsubst %, pdf/%.html, $(SRC))
 _PDF=$(patsubst %, pdf/%.pdf, $(SRC))
 
-.PHONY: all clean
-all: book.pdf
+ATHENAPDF=docker run --rm -v $(CURDIR)/../:/converted/ --security-opt seccomp:unconfined \
+	arachnysdocker/athenapdf athenapdf -D 1000
 
-%.html: %.ipynb
-	jupyter nbconvert --to html --template classic $<
-	sed -i 's/\.ipynb"/.html"/' $@
-	sed -i 's/\.ipynb#/.html#/' $@
+## RULES: all, web, book, chapters, clean
 
-pdf/%.pdf: %.html
-	mkdir -p pdf
-	wkhtmltopdf --print-media-type $< $@
+.PHONY: all
+all: book web
 
-index.html: README.md
-	pandoc -s $< -t html -o $@ -T "Spatial algorithms with Python"
-	sed -i 's/\.ipynb/.html/' $@
+.PHONY: book
+book: pdf/book.pdf
 
-cover.pdf: index.html
-	mkdir -p pdf
-	wkhtmltopdf --print-media-type $< $@
+.PHONY: chapters
+chapters: $(_PDF)
 
-book.pdf: cover.pdf $(_PDF)
-	pdfunite $^ $@
+.PHONY: web
+web: $(_WEB_HTML) web/index.html
 
+.PHONY: clean
 clean:
 	$(RM) *.html
 	$(RM) *.pdf
+	$(RM) web/
 	$(RM) pdf/
+
+.SECONDARY:
+web/%.html: %.ipynb
+	mkdir -p web
+	jupyter nbconvert --to html --template classic --output-dir="./web" $<
+	sed -i 's/\.ipynb\"/.html"/' $@
+	sed -i 's/\.ipynb\#/.html#/' $@
+	sed -i 's|\.\./images/|../../images/|' $@
+
+.SECONDARY:
+pdf/%.html: %.ipynb
+	mkdir -p pdf
+	jupyter nbconvert --to html --template classic --output-dir="./pdf" $<
+	sed -i 's/\.ipynb\"/.pdf"/' $@
+	sed -i 's/\.ipynb\#/.pdf#/' $@
+	sed -i 's|\.\./images/|../../images/|' $@
+
+.SECONDARY:
+pdf/%.pdf: pdf/%.html
+	mkdir -p pdf
+	$(ATHENAPDF) book/$< book/$@
+
+web/index.html: README.md
+	pandoc -s $< -t html -o $@ -T "Spatial algorithms with Python"
+	sed -i 's/\.ipynb/.html/' $@
+
+pdf/index.html: README.md
+	pandoc -s $< -t html -o $@ -T "Spatial algorithms with Python"
+	sed -i 's/\.ipynb/.pdf/' $@
+
+pdf/00_toc.pdf: pdf/index.html
+	mkdir -p pdf
+	$(ATHENAPDF) book/$< book/$@
+
+pdf/00_cover.pdf: 00_cover.tex
+	pdflatex -output-directory pdf $< 
+
+pdf/book.pdf: pdf/00_cover.pdf pdf/00_toc.pdf $(_PDF)
+	pdfunite $^ $@

@@ -1,7 +1,4 @@
 # Spatial algorithms with Python
-Máté Cserép  
-Eötvös Loránd University, Faculty of Informatics  
-Budapest, 2021
 
 ## Workbooks
  1. [Python introduction](01_python_intro.ipynb)
