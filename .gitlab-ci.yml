@@ -1,0 +1,13 @@
+image: ubuntu:20.04
+
+pages:
+  stage: deploy
+  script:
+    - mkdir public
+    - cp -r book/web/. public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 day
+  only:
+    - master
