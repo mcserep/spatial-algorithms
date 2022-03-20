@@ -8,3 +8,7 @@ Materials for the Spatial algorithms course in Cartography MSc.
  - [Solution books](solutions/README.md) (for the workbooks)
  - [Exercise books](exercises/README.md) (and their solutions)
  - [Lecture notes](book/README.md) (executed notebooks with HTML and PDF export)
+ 
+## Online access
+[GitLab Pages](http://mate.elte.gitlab-pages.hu/spatial-algorithms/)
+
